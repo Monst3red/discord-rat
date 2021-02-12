@@ -1,0 +1,12 @@
+re
+os
+requests
+json
+shutil
+discord
+base64
+urllib
+subprocess
+platform
+webbrowser
+ctypes
