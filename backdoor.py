@@ -6,7 +6,7 @@ from urllib.request import Request, urlopen
 from subprocess import Popen, PIPE
 import platform as plt
 
-Token = "ODA5ODcwODk4MzY2NTEzMjUz.YCbZDA.MvhK9BBv0FkBLkwNo3JYhLvi1xs"
+Token = ""
 os.system("cls")
 
 client = commands.Bot(command_prefix=".")
