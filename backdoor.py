@@ -7,7 +7,6 @@ from subprocess import Popen, PIPE
 import platform as plt
 
 Token = ""
-os.system("cls")
 
 client = commands.Bot(command_prefix=".")
 
