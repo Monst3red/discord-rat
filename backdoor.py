@@ -13,7 +13,7 @@ from urllib.request import Request, urlopen
 from subprocess import Popen, PIPE
 import platform as plt
 
-Token = "ODA5ODcwODk4MzY2NTEzMjUz.YCbZDA.DvFqOGpKfbUkflFEBlcq-5kC-t4"
+Token = ""
 
 client = commands.Bot(command_prefix="!!")
 
